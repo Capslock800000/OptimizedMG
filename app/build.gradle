@@ -1,0 +1,80 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.optimizedmg'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.optimizedmg"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags '-std=c++17 -O3 -ffast-math -march=armv8-a+simd -mfpu=neon'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
+            }
+        }
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            externalNativeBuild {
+                cmake {
+                    cFlags '-O3 -ffast-math -DNDEBUG'
+                    cppFlags '-O3 -ffast-math -DNDEBUG'
+                }
+            }
+        }
+        debug {
+            jniDebuggable true
+            externalNativeBuild {
+                cmake {
+                    cFlags '-O2 -g'
+                    cppFlags '-O2 -g'
+                }
+            }
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+    
+    buildFeatures {
+        compose true
+    }
+    
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.0'
+    }
+}
+
+dependencies {
+    implementation 'com.google.android.material:material:1.9.0'
+    // 或者如果使用 Compose：
+    implementation 'androidx.compose.material3:material3:1.1.2'
+
