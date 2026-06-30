@@ -24,7 +24,7 @@ add_library(
     main.cpp
     math/VectorMath.cpp
     math/MatrixMath.cpp
-    math/QuaternionMath.cpp
+    QuaternionMath.cpp
     math/FastMath.cpp
     mobileglues/OptimizedRenderer.cpp
     mobileglues/ShaderManager.cpp
