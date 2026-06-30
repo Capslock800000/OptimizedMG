@@ -77,9 +77,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.compose.material3:material3:1.1.2'
 }
+<<<<<<< HEAD
 
 minSdk 26
 
 targetSdk 33
 
 compileSdk 33
+=======
+>>>>>>> 3791e8f (Fix Gradle)
