@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.optimizedmg'
+    namespace 'com.capslock800000.optimizedmg'
     compileSdk 33
-
+}
     defaultConfig {
-        applicationId "com.optimizedmg"
+        applicationId "com.capslock800000.optimizedmg"
         minSdk 24
         targetSdk 33
         versionCode 1
