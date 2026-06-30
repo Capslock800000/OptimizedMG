@@ -5,12 +5,9 @@ plugins {
 
 android {
     namespace 'com.capslock800000.optimizedmg'
-    compileSdk 33
 
     defaultConfig {
         applicationId "com.capslock800000.optimizedmg"
-        minSdk 28
-        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -78,8 +75,5 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.1.2'
 }
 
-minSdk 28
 
-targetSdk 33
 
-compileSdk 33
