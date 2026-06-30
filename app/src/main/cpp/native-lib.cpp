@@ -1,14 +1,10 @@
-
 #include <jni.h>
+#include <string>
 
-extern "C" {
-
-JNIEXPORT void JNICALL
-Java_com_capslock800000_optimizedmg_NativeRenderer_nativeInit(JNIEnv*, jobject){}
-
-JNIEXPORT void JNICALL
-Java_com_capslock800000_optimizedmg_NativeRenderer_nativeRender(JNIEnv*, jobject){}
-
-JNIEXPORT void JNICALL
-Java_com_capslock800000_optimizedmg_NativeRenderer_nativeCleanup(JNIEnv*, jobject){}
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_optimizedmg_MainActivity_stringFromJNI(
+        JNIEnv* env,
+        jobject /* this */) {
+    std::string hello = "Hello from C++";
+    return env->NewStringUTF(hello.c_str());
 }
