@@ -5,11 +5,15 @@ plugins {
 
 android {
     namespace 'com.capslock800000.optimizedmg'
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.capslock800000.optimizedmg"
         versionCode 1
         versionName "1.0"
+
+        minSdk 28
+        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
