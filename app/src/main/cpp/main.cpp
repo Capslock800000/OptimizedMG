@@ -7,6 +7,7 @@
 #include "math/VectorMath.h"
 #include "math/MatrixMath.h"
 #include "math/FastMath.h"
+#include "PerformanceMonitor.h"
 #include "mobileglues/OptimizedRenderer.h"
 
 #define LOG_TAG "OptimizedMG"

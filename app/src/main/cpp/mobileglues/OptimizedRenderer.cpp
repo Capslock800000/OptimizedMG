@@ -1,8 +1,10 @@
 #include "OptimizedRenderer.h"
 #include <android/log.h>
 #include <EGL/egl.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
+#include <cstdint>
 #include <chrono>
+#include "math/FastMath.h"
 
 #define LOG_TAG "OptimizedRenderer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)

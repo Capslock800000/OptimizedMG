@@ -8,14 +8,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 优化标志
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math -march=armv8-a+simd -mfpu=neon -ftree-vectorize -funsafe-math-optimizations")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -march=armv8-a+simd -mfpu=neon -ftree-vectorize -funsafe-math-optimizations")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math -march=armv8-a+simd -ftree-vectorize -funsafe-math-optimizations")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -march=armv8-a+simd -ftree-vectorize -funsafe-math-optimizations")
 
 # 查找必要的库
 find_library(log-lib log)
 find_library(android-lib android)
 find_library(egl-lib EGL)
-find_library(glesv2-lib GLESv2)
+find_library(glesv3-lib GLESv3)
 
 # 主库
 add_library(
@@ -37,7 +37,7 @@ target_link_libraries(
     ${log-lib}
     ${android-lib}
     ${egl-lib}
-    ${glesv2-lib}
+    ${glesv3-lib}
 )
 
 # 包含目录

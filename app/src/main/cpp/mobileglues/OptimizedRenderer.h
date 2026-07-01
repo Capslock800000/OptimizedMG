@@ -2,6 +2,8 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstdint>
+#include <GLES3/gl3.h>
 #include "math/VectorMath.h"
 #include "math/MatrixMath.h"
 
