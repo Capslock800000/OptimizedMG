@@ -26,6 +26,7 @@ add_library(
     math/MatrixMath.cpp
     QuaternionMath.cpp
     math/FastMath.cpp
+    PerformanceMonitor.cpp
     mobileglues/OptimizedRenderer.cpp
     mobileglues/ShaderManager.cpp
     mobileglues/TextureCache.cpp
