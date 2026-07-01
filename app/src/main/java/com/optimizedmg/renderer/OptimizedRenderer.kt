@@ -3,7 +3,7 @@ package com.capslock800000.optimizedmg.renderer
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.Log
-import com.optimizedmg.core.PerformanceMonitor
+import com.capslock800000.optimizedmg.core.PerformanceMonitor
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 

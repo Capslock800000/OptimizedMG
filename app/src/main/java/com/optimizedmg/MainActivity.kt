@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.optimizedmg.core.PerformanceMonitor
-import com.optimizedmg.renderer.OptimizedRenderer
-import com.optimizedmg.ui.Theme
-import com.optimizedmg.ui.MainScreen
+import com.capslock800000.optimizedmg.core.PerformanceMonitor
+import com.capslock800000.optimizedmg.renderer.OptimizedRenderer
+import com.capslock800000.optimizedmg.ui.Theme
+import com.capslock800000.optimizedmg.ui.MainScreen
 
 class MainActivity : AppCompatActivity() {
     private lateinit var renderer: OptimizedRenderer

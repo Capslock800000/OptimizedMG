@@ -10,8 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.optimizedmg.core.PerformanceMonitor
-import com.optimizedmg.renderer.OptimizedRenderer
+import com.capslock800000.optimizedmg.core.PerformanceMonitor
+import com.capslock800000.optimizedmg.renderer.OptimizedRenderer
 import kotlinx.coroutines.delay
 
 /**
