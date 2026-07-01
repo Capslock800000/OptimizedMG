@@ -1,4 +1,6 @@
 #include "ShaderManager.h"
+#include "../math/VectorMath.h"
+#include "../math/MatrixMath.h"
 #include <android/log.h>
 
 #define LOG_TAG "ShaderManager"

@@ -3,6 +3,7 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <cstring>
+#include <exception>
 #include <atomic>
 #include "math/VectorMath.h"
 #include "math/MatrixMath.h"
