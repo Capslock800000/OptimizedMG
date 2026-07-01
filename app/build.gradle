@@ -18,7 +18,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags '-std=c++17 -O3 -ffast-math -march=armv8-a+simd -mfpu=neon'
+                cppFlags '-std=c++17 -O3 -ffast-math  '
                 arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
             }
         }
@@ -81,3 +81,10 @@ dependencies {
 
 
 
+
+
+dependencies {
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    implementation 'androidx.compose.ui:ui:1.5.4'
+    implementation 'androidx.compose.ui:ui-tooling-preview:1.5.4'
+}
