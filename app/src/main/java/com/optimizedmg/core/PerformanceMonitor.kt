@@ -15,7 +15,7 @@ class PerformanceMonitor {
     private external fun nativeGetAverageFrameTime(ptr: Long): Float
     private external fun nativeGetFrameTimeVariance(ptr: Long): Float
     
-    private val nativePtr: Long by lazy { nativeCreate() }
+    private val nativePtrHandle: Long by lazy(LazyThreadSafetyMode.NONE) { nativeCreate() }
     private val frameTimes = FloatArray(120) // 2秒数据（假设60FPS）
     private var currentIndex = 0
     private var totalFrames = 0L
@@ -24,7 +24,7 @@ class PerformanceMonitor {
     private val lastUpdateTime = AtomicLong(System.nanoTime())
     private val frameCount = AtomicLong(0)
     
-    fun getNativePtr(): Long = nativePtr
+    fun getNativePtr(): Long = nativePtrHandle
     
     fun updateFrameTime(frameTime: Float) {
         frameTimes[currentIndex] = frameTime
@@ -32,19 +32,19 @@ class PerformanceMonitor {
         totalFrames++
         
         frameCount.incrementAndGet()
-        nativeUpdateFrameTime(nativePtr, frameTime)
+        nativeUpdateFrameTime(nativePtrHandle, frameTime)
     }
     
     fun getCurrentFPS(): Float {
-        return nativeGetFPS(nativePtr)
+        return nativeGetFPS(nativePtrHandle)
     }
     
     fun getAverageFrameTime(): Float {
-        return nativeGetAverageFrameTime(nativePtr)
+        return nativeGetAverageFrameTime(nativePtrHandle)
     }
     
     fun getFrameTimeVariance(): Float {
-        return nativeGetFrameTimeVariance(nativePtr)
+        return nativeGetFrameTimeVariance(nativePtrHandle)
     }
     
     fun getFrameTimePercentile(percentile: Float): Float {
@@ -90,6 +90,6 @@ class PerformanceMonitor {
     }
     
     protected fun finalize() {
-        nativeDestroy(nativePtr)
+        nativeDestroy(nativePtrHandle)
     }
 }
