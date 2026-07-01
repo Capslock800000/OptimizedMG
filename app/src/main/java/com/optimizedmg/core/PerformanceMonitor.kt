@@ -1,4 +1,4 @@
-package com.optimizedmg.core
+package com.capslock800000.optimizedmg.core
 
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.sqrt

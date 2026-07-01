@@ -1,4 +1,4 @@
-package com.optimizedmg
+package com.capslock800000.optimizedmg
 
 import android.opengl.GLSurfaceView
 import androidx.appcompat.app.AppCompatActivity

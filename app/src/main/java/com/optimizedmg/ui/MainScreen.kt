@@ -1,4 +1,4 @@
-package com.optimizedmg.ui
+package com.capslock800000.optimizedmg.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState

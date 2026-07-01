@@ -1,4 +1,4 @@
-package com.optimizedmg.renderer
+package com.capslock800000.optimizedmg.renderer
 
 import android.content.Context
 import android.opengl.GLSurfaceView
