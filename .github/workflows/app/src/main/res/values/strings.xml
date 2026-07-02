@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">OptimizedMG</string>
-    <string name="start_performance_test">开始性能测试</string>
-    <string name="reset_stats">重置统计</string>
-    <string name="run_math_benchmark">运行数学基准测试</string>
-    <string name="performance_monitoring">性能监控</string>
-    <string name="render_control">渲染控制</string>
-    <string name="math_performance_test">数学性能测试</string>
-</resources>
