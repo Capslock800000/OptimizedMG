@@ -42,4 +42,9 @@ target_link_libraries(
 )
 
 # 包含目录
-target_include_directories(optimizedmg PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(optimizedmg PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/math
+    ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues
+    ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues-core/include
+)

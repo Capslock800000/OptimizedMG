@@ -22,8 +22,19 @@ static std::atomic<bool> g_initialized{false};
 // JNI函数声明
 extern "C" {
 
+
+jint JNI_OnLoad(JavaVM* vm, void*) {
+    JNIEnv* env = nullptr;
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+    LOGI("OptimizedMG JNI loaded");
+    return JNI_VERSION_1_6;
+}
+
+
 JNIEXPORT jboolean JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeInit(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeInit(JNIEnv* env, jobject thiz) {
     if (g_initialized) {
         return JNI_TRUE;
     }
@@ -47,7 +58,7 @@ Java_com_optimizedmg_renderer_OptimizedRenderer_nativeInit(JNIEnv* env, jobject 
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeCleanup(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeCleanup(JNIEnv* env, jobject thiz) {
     if (g_renderer) {
         g_renderer->cleanup();
         delete g_renderer;
@@ -58,14 +69,14 @@ Java_com_optimizedmg_renderer_OptimizedRenderer_nativeCleanup(JNIEnv* env, jobje
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz) {
     if (g_renderer) {
         g_renderer->onSurfaceCreated();
     }
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeOnSurfaceChanged(JNIEnv* env, jobject thiz, 
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeOnSurfaceChanged(JNIEnv* env, jobject thiz, 
                                                                       jint width, jint height) {
     if (g_renderer) {
         g_renderer->onSurfaceChanged(width, height);
@@ -73,14 +84,14 @@ Java_com_optimizedmg_renderer_OptimizedRenderer_nativeOnSurfaceChanged(JNIEnv* e
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeOnDrawFrame(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeOnDrawFrame(JNIEnv* env, jobject thiz) {
     if (g_renderer) {
         g_renderer->onDrawFrame();
     }
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeSetPerformanceMonitor(JNIEnv* env, jobject thiz, 
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeSetPerformanceMonitor(JNIEnv* env, jobject thiz, 
                                                                            jlong ptr) {
     if (g_renderer) {
         g_renderer->setPerformanceMonitor(reinterpret_cast<PerformanceMonitor*>(ptr));
@@ -88,7 +99,7 @@ Java_com_optimizedmg_renderer_OptimizedRenderer_nativeSetPerformanceMonitor(JNIE
 }
 
 JNIEXPORT jfloat JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeGetFPS(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeGetFPS(JNIEnv* env, jobject thiz) {
     if (g_renderer) {
         return g_renderer->getCurrentFPS();
     }
@@ -96,7 +107,7 @@ Java_com_optimizedmg_renderer_OptimizedRenderer_nativeGetFPS(JNIEnv* env, jobjec
 }
 
 JNIEXPORT jfloat JNICALL
-Java_com_optimizedmg_renderer_OptimizedRenderer_nativeGetFrameTime(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeGetFrameTime(JNIEnv* env, jobject thiz) {
     if (g_renderer) {
         return g_renderer->getAverageFrameTime();
     }
@@ -105,13 +116,13 @@ Java_com_optimizedmg_renderer_OptimizedRenderer_nativeGetFrameTime(JNIEnv* env, 
 
 // PerformanceMonitor JNI函数
 JNIEXPORT jlong JNICALL
-Java_com_optimizedmg_core_PerformanceMonitor_nativeCreate(JNIEnv* env, jobject thiz) {
+Java_com_capslock800000_optimizedmg_core_PerformanceMonitor_nativeCreate(JNIEnv* env, jobject thiz) {
     auto monitor = new PerformanceMonitor();
     return reinterpret_cast<jlong>(monitor);
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_core_PerformanceMonitor_nativeDestroy(JNIEnv* env, jobject thiz, jlong ptr) {
+Java_com_capslock800000_optimizedmg_core_PerformanceMonitor_nativeDestroy(JNIEnv* env, jobject thiz, jlong ptr) {
     auto monitor = reinterpret_cast<PerformanceMonitor*>(ptr);
     if (monitor) {
         delete monitor;
@@ -119,7 +130,7 @@ Java_com_optimizedmg_core_PerformanceMonitor_nativeDestroy(JNIEnv* env, jobject 
 }
 
 JNIEXPORT void JNICALL
-Java_com_optimizedmg_core_PerformanceMonitor_nativeUpdateFrameTime(JNIEnv* env, jobject thiz, 
+Java_com_capslock800000_optimizedmg_core_PerformanceMonitor_nativeUpdateFrameTime(JNIEnv* env, jobject thiz, 
                                                                   jlong ptr, jfloat frameTime) {
     auto monitor = reinterpret_cast<PerformanceMonitor*>(ptr);
     if (monitor) {
@@ -128,7 +139,7 @@ Java_com_optimizedmg_core_PerformanceMonitor_nativeUpdateFrameTime(JNIEnv* env, 
 }
 
 JNIEXPORT jfloat JNICALL
-Java_com_optimizedmg_core_PerformanceMonitor_nativeGetFPS(JNIEnv* env, jobject thiz, jlong ptr) {
+Java_com_capslock800000_optimizedmg_core_PerformanceMonitor_nativeGetFPS(JNIEnv* env, jobject thiz, jlong ptr) {
     auto monitor = reinterpret_cast<PerformanceMonitor*>(ptr);
     if (monitor) {
         return monitor->getCurrentFPS();
@@ -137,7 +148,7 @@ Java_com_optimizedmg_core_PerformanceMonitor_nativeGetFPS(JNIEnv* env, jobject t
 }
 
 JNIEXPORT jfloat JNICALL
-Java_com_optimizedmg_core_PerformanceMonitor_nativeGetAverageFrameTime(JNIEnv* env, jobject thiz, jlong ptr) {
+Java_com_capslock800000_optimizedmg_core_PerformanceMonitor_nativeGetAverageFrameTime(JNIEnv* env, jobject thiz, jlong ptr) {
     auto monitor = reinterpret_cast<PerformanceMonitor*>(ptr);
     if (monitor) {
         return monitor->getAverageFrameTime();
@@ -146,7 +157,7 @@ Java_com_optimizedmg_core_PerformanceMonitor_nativeGetAverageFrameTime(JNIEnv* e
 }
 
 JNIEXPORT jfloat JNICALL
-Java_com_optimizedmg_core_PerformanceMonitor_nativeGetFrameTimeVariance(JNIEnv* env, jobject thiz, jlong ptr) {
+Java_com_capslock800000_optimizedmg_core_PerformanceMonitor_nativeGetFrameTimeVariance(JNIEnv* env, jobject thiz, jlong ptr) {
     auto monitor = reinterpret_cast<PerformanceMonitor*>(ptr);
     if (monitor) {
         return monitor->getFrameTimeVariance();

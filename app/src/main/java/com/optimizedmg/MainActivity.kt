@@ -14,11 +14,23 @@ import com.capslock800000.optimizedmg.ui.Theme
 import com.capslock800000.optimizedmg.ui.MainScreen
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        init {
+            try {
+                System.loadLibrary("optimizedmg")
+            } catch (e: UnsatisfiedLinkError) {
+                android.util.Log.e("OptimizedMG", "Failed to load native library", e)
+            }
+        }
+    }
     private lateinit var renderer: OptimizedRenderer
     private lateinit var glSurfaceView: GLSurfaceView
     private lateinit var performanceMonitor: PerformanceMonitor
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        Thread.setDefaultUncaughtExceptionHandler { _, e ->
+            android.util.Log.e("OptimizedMG", "Uncaught exception", e)
+        }
         super.onCreate(savedInstanceState)
         
         // 初始化性能监控
