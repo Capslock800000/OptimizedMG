@@ -1,56 +1,84 @@
+
 cmake_minimum_required(VERSION 3.18.1)
 
-project("optimizedmg")
+project(optimizedmg)
 
-# 设置极致优化的编译选项
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 优化标志
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math ")
-
-# 查找必要的库
 find_library(log-lib log)
 find_library(android-lib android)
 find_library(egl-lib EGL)
 find_library(glesv3-lib GLESv3)
 
-# MobileGlues runtime
-add_subdirectory(MobileGlues-cpp EXCLUDE_FROM_ALL)
+set(MG_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp)
 
-# 主库
-add_library(
- optimizedmg
- SHARED
- main.cpp
- math/VectorMath.cpp
- math/MatrixMath.cpp
- QuaternionMath.cpp
- math/FastMath.cpp
- PerformanceMonitor.cpp
- mobileglues/OptimizedRenderer.cpp
- mobileglues/ShaderManager.cpp
- mobileglues/TextureCache.cpp
+# Root project sources
+set(ROOT_SOURCES
+    main.cpp
+    native-lib.cpp
+    PerformanceMonitor.cpp
+    QuaternionMath.cpp
+    math/VectorMath.cpp
+    math/MatrixMath.cpp
+    math/FastMath.cpp
+    mobileglues/OptimizedRenderer.cpp
+    mobileglues/ShaderManager.cpp
+    mobileglues/TextureCache.cpp
 )
 
-# 链接库
-target_link_libraries(
- optimizedmg
- ${log-lib}
- ${android-lib}
- ${egl-lib}
- ${glesv3-lib}
+# MobileGlues runtime sources (merged in; exclude the dependency-heavy shader transpiler entry)
+file(GLOB_RECURSE MOBILEGLUES_SOURCES CONFIGURE_DEPENDS
+    ${MG_ROOT}/gl/*.cpp
+    ${MG_ROOT}/egl/*.cpp
+    ${MG_ROOT}/gles/*.cpp
+    ${MG_ROOT}/glx/*.cpp
+    ${MG_ROOT}/config/*.cpp
 )
 
-# 包含目录
+# Exclude source files that require missing/optional third-party build products.
+list(FILTER MOBILEGLUES_SOURCES EXCLUDE REGEX ".*/gl/glsl/glsl_for_es\\.cpp$")
+list(FILTER MOBILEGLUES_SOURCES EXCLUDE REGEX ".*/main\\.cpp$")
+list(FILTER MOBILEGLUES_SOURCES EXCLUDE REGEX ".*/init\\.cpp$")
+list(FILTER MOBILEGLUES_SOURCES EXCLUDE REGEX ".*/include/SPIRV/.*\\.cpp$")
+
+add_library(optimizedmg SHARED
+    ${ROOT_SOURCES}
+    ${MOBILEGLUES_SOURCES}
+    ${MG_ROOT}/gl/glsl/glsl_for_es_stub.cpp
+)
+
 target_include_directories(optimizedmg PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/math
     ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues
-    ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues-core/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/3rdparty/glm
-    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/3rdparty/xxhash
+
+    ${MG_ROOT}
+    ${MG_ROOT}/gl
+    ${MG_ROOT}/gl/ExtWrappers
+    ${MG_ROOT}/gl/FSR1
+    ${MG_ROOT}/gl/glsl
+    ${MG_ROOT}/egl
+    ${MG_ROOT}/gles
+    ${MG_ROOT}/glx
+    ${MG_ROOT}/config
+    ${MG_ROOT}/include
+    ${MG_ROOT}/include/SPIRV
+    ${MG_ROOT}/include/glslang
+    ${MG_ROOT}/include/spirv_cross
+        ${MG_ROOT}/include
+)
+
+target_compile_options(optimizedmg PRIVATE
+    -O3
+    -ffast-math
+    -fvisibility=hidden
+)
+
+target_link_libraries(optimizedmg
+    ${android-lib}
+    ${log-lib}
+    ${egl-lib}
+    ${glesv3-lib}
 )
