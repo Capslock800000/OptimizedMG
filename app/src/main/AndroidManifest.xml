@@ -14,9 +14,10 @@
         android:glEsVersion="0x30000"
         android:required="true" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.capslock800000.optimizedmg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
     <permission
         android:name="com.capslock800000.optimizedmg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-    <uses-permission android:name="com.capslock800000.optimizedmg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+        android:protectionLevel="signature" />
     <application
         android:theme="@01030237"
         android:label="@7F0F001C"
