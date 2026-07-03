@@ -16,7 +16,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <permission
         android:name="com.capslock800000.optimizedmg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-        android:protectionLevel="0x00000002" />
     <uses-permission android:name="com.capslock800000.optimizedmg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
     <application
         android:theme="@01030237"
