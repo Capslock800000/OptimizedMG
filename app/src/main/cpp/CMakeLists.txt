@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18.1)
 project("optimizedmg")
 
 # 设置极致优化的编译选项
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -16,6 +16,9 @@ find_library(log-lib log)
 find_library(android-lib android)
 find_library(egl-lib EGL)
 find_library(glesv3-lib GLESv3)
+
+# MobileGlues runtime
+add_subdirectory(MobileGlues-cpp EXCLUDE_FROM_ALL)
 
 # 主库
 add_library(
@@ -47,4 +50,7 @@ target_include_directories(optimizedmg PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/math
     ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues
     ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues-core/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/3rdparty/glm
+    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/3rdparty/xxhash
 )

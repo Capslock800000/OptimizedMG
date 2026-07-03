@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         init {
             try {
+                System.loadLibrary("mobileglues")
                 System.loadLibrary("optimizedmg")
             } catch (e: UnsatisfiedLinkError) {
                 android.util.Log.e("OptimizedMG", "Failed to load native library", e)
