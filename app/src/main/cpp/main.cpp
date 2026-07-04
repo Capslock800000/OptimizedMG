@@ -43,12 +43,12 @@ Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeInit(JNIEnv
         g_renderer = new OptimizedRenderer();
         if (g_renderer->initialize()) {
             g_initialized = true;
-            LOGI("OptimizedRenderer initialized successfully");
+            LOGI("OptimizedMGRenderer initialized successfully");
             return JNI_TRUE;
         } else {
             delete g_renderer;
             g_renderer = nullptr;
-            LOGE("Failed to initialize OptimizedRenderer");
+            LOGE("Failed to initialize OptimizedMGRenderer");
             return JNI_FALSE;
         }
     } catch (const std::exception& e) {
@@ -65,7 +65,7 @@ Java_com_capslock800000_optimizedmg_renderer_OptimizedRenderer_nativeCleanup(JNI
         g_renderer = nullptr;
     }
     g_initialized = false;
-    LOGI("OptimizedRenderer cleaned up");
+    LOGI("OptimizedMGRenderer cleaned up");
 }
 
 JNIEXPORT void JNICALL
