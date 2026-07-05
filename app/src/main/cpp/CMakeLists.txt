@@ -49,11 +49,6 @@ add_library(optimizedmg SHARED
     ${MG_ROOT}/gl/glsl/glsl_for_es_stub.cpp
 )
 
-# Enable NEON support for ARM architectures
-if(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a" OR CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
-    target_compile_options(optimizedmg PRIVATE -mfloat-abi=softfp -mfpu=neon)
-endif()
-
 target_include_directories(optimizedmg PRIVATE
     # FSR1 requires GLM headers
     ${CMAKE_CURRENT_SOURCE_DIR}
