@@ -4,6 +4,7 @@
 #include <GLES3/gl3.h>
 #include <cstdint>
 #include <chrono>
+#include <cstring>
 #include "math/FastMath.h"
 
 #define LOG_TAG "OptimizedRenderer"
@@ -59,6 +60,7 @@ OptimizedRenderer::OptimizedRenderer()
     , m_vertexBuffer(0)
     , m_indexBuffer(0)
     , m_vertexArray(0) {
+    LOGI("OptimizedRenderer constructor called");
 }
 
 OptimizedRenderer::~OptimizedRenderer() {
@@ -72,16 +74,31 @@ bool OptimizedRenderer::initialize() {
     
     LOGI("Initializing OptimizedRenderer");
     
-    // 初始化OpenGL ES
-    const char* version = (const char*)glGetString(GL_VERSION);
-    const char* renderer = (const char*)glGetString(GL_RENDERER);
-    LOGI("OpenGL ES Version: %s", version ? version : "Unknown");
-    LOGI("Renderer: %s", renderer ? renderer : "Unknown");
+    // 检查 OpenGL 状态 - 延迟初始化，避免在线程初始化时调用
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+        LOGE("OpenGL error before initialization: 0x%04X", error);
+    }
     
-    // 检查必要的扩展
-    const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
-    if (extensions) {
-        LOGI("Supported extensions: %s", extensions);
+    // 安全地获取 OpenGL 信息，带空指针检查
+    const GLubyte* version = glGetString(GL_VERSION);
+    if (version) {
+        LOGI("OpenGL ES Version: %s", (const char*)version);
+    } else {
+        LOGI("OpenGL ES Version: Unable to query");
+    }
+    
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    if (renderer) {
+        LOGI("Renderer: %s", (const char*)renderer);
+    } else {
+        LOGI("Renderer: Unable to query");
+    }
+    
+    const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+    if (extensions && strlen((const char*)extensions) < 2000) {
+        // 只在字符串合理长度时打印（防止超大字符串导致的问题）
+        LOGI("Extensions available");
     }
     
     // 初始化着色器和缓冲区
@@ -103,6 +120,8 @@ bool OptimizedRenderer::initialize() {
 }
 
 void OptimizedRenderer::cleanup() {
+    LOGI("Cleaning up OptimizedRenderer");
+    
     if (m_vertexShader) {
         glDeleteShader(m_vertexShader);
         m_vertexShader = 0;
@@ -141,27 +160,40 @@ void OptimizedRenderer::cleanup() {
 void OptimizedRenderer::onSurfaceCreated() {
     LOGI("Surface created");
     
+    // 检查 OpenGL 错误
+    checkGLError("onSurfaceCreated entry");
+    
     // 设置清屏颜色
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    checkGLError("glClearColor");
     
     // 启用深度测试
     glEnable(GL_DEPTH_TEST);
+    checkGLError("glEnable(GL_DEPTH_TEST)");
     
     // 启用背面剔除
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    checkGLError("glEnable(GL_CULL_FACE)");
     
     m_surfaceCreated = true;
+    LOGI("Surface setup complete");
 }
 
 void OptimizedRenderer::onSurfaceChanged(int width, int height) {
     LOGI("Surface changed: %dx%d", width, height);
+    
+    if (width <= 0 || height <= 0) {
+        LOGE("Invalid surface dimensions: %dx%d", width, height);
+        return;
+    }
     
     m_width = width;
     m_height = height;
     
     // 设置视口
     glViewport(0, 0, width, height);
+    checkGLError("glViewport");
     
     // 更新投影矩阵
     float aspect = (float)width / (float)height;
@@ -175,6 +207,8 @@ void OptimizedRenderer::onSurfaceChanged(int width, int height) {
 
 void OptimizedRenderer::onDrawFrame() {
     if (!m_initialized || !m_surfaceCreated) {
+        LOGE("onDrawFrame called but renderer not initialized. initialized=%d surfaceCreated=%d",
+             m_initialized, m_surfaceCreated);
         return;
     }
     
@@ -182,6 +216,7 @@ void OptimizedRenderer::onDrawFrame() {
     
     // 清屏
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    checkGLError("glClear");
     
     // 渲染帧
     renderFrame();
@@ -209,15 +244,19 @@ void OptimizedRenderer::setPerformanceMonitor(PerformanceMonitor* monitor) {
 }
 
 bool OptimizedRenderer::initializeShaders() {
+    LOGI("Initializing shaders");
+    
     // 编译顶点着色器
     m_vertexShader = compileShader(VERTEX_SHADER_SOURCE, GL_VERTEX_SHADER);
     if (!m_vertexShader) {
+        LOGE("Failed to compile vertex shader");
         return false;
     }
     
     // 编译片段着色器
     m_fragmentShader = compileShader(FRAGMENT_SHADER_SOURCE, GL_FRAGMENT_SHADER);
     if (!m_fragmentShader) {
+        LOGE("Failed to compile fragment shader");
         return false;
     }
     
@@ -231,9 +270,11 @@ bool OptimizedRenderer::initializeShaders() {
     // 附加着色器
     glAttachShader(m_shaderProgram, m_vertexShader);
     glAttachShader(m_shaderProgram, m_fragmentShader);
+    checkGLError("glAttachShader");
     
     // 链接程序
     glLinkProgram(m_shaderProgram);
+    checkGLError("glLinkProgram");
     
     // 检查链接状态
     GLint linkStatus;
@@ -242,6 +283,8 @@ bool OptimizedRenderer::initializeShaders() {
         GLchar infoLog[512];
         glGetProgramInfoLog(m_shaderProgram, sizeof(infoLog), nullptr, infoLog);
         LOGE("Shader program linking failed: %s", infoLog);
+        glDeleteProgram(m_shaderProgram);
+        m_shaderProgram = 0;
         return false;
     }
     
@@ -250,26 +293,45 @@ bool OptimizedRenderer::initializeShaders() {
 }
 
 bool OptimizedRenderer::initializeBuffers() {
+    LOGI("Initializing buffers");
+    
     // 生成顶点数组对象
     glGenVertexArrays(1, &m_vertexArray);
+    if (!m_vertexArray) {
+        LOGE("Failed to create vertex array");
+        return false;
+    }
     glBindVertexArray(m_vertexArray);
+    checkGLError("glGenVertexArrays");
     
-    // 生成顶点缓冲区
+    // 生��顶点缓冲区
     glGenBuffers(1, &m_vertexBuffer);
+    if (!m_vertexBuffer) {
+        LOGE("Failed to create vertex buffer");
+        return false;
+    }
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(VERTEX_DATA), VERTEX_DATA, GL_STATIC_DRAW);
+    checkGLError("glGenBuffers (vertex)");
     
     // 生成索引缓冲区
     glGenBuffers(1, &m_indexBuffer);
+    if (!m_indexBuffer) {
+        LOGE("Failed to create index buffer");
+        return false;
+    }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDEX_DATA), INDEX_DATA, GL_STATIC_DRAW);
+    checkGLError("glGenBuffers (index)");
     
     // 设置顶点属性
     glEnableVertexAttribArray(0); // 位置
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    checkGLError("glVertexAttribPointer(0)");
     
     glEnableVertexAttribArray(1); // 颜色
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+    checkGLError("glVertexAttribPointer(1)");
     
     // 解绑
     glBindVertexArray(0);
@@ -284,14 +346,24 @@ void OptimizedRenderer::initializeMatrices() {
     
     // 初始化视图矩阵 - 稍微向后移动相机
     m_viewMatrix = OptimizedMath::Matrix4::translation(0.0f, 0.0f, -2.0f);
+    
+    // 初始化投影矩阵为单位矩阵（会在onSurfaceChanged中更新）
+    m_projectionMatrix = OptimizedMath::Matrix4::identity();
 }
 
 void OptimizedRenderer::renderFrame() {
+    if (!m_shaderProgram || !m_vertexArray) {
+        LOGE("renderFrame called but shader program or vertex array not ready");
+        return;
+    }
+    
     // 使用着色器程序
     glUseProgram(m_shaderProgram);
+    checkGLError("glUseProgram");
     
     // 绑定顶点数组
     glBindVertexArray(m_vertexArray);
+    checkGLError("glBindVertexArray");
     
     // 计算MVP矩阵
     OptimizedMath::Matrix4 mvp = OptimizedMath::Matrix4::multiply(
@@ -303,6 +375,9 @@ void OptimizedRenderer::renderFrame() {
     GLint mvpLocation = glGetUniformLocation(m_shaderProgram, "uMVPMatrix");
     if (mvpLocation != -1) {
         glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, mvp.data);
+        checkGLError("glUniformMatrix4fv");
+    } else {
+        LOGE("Failed to get uMVPMatrix uniform location");
     }
     
     // 轻微旋转模型矩阵以产生动画效果
@@ -312,6 +387,7 @@ void OptimizedRenderer::renderFrame() {
     
     // 绘制三角形
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, nullptr);
+    checkGLError("glDrawElements");
     
     // 解绑
     glBindVertexArray(0);
@@ -334,15 +410,21 @@ void OptimizedRenderer::updateFPS() {
 }
 
 GLuint OptimizedRenderer::compileShader(const char* source, GLenum type) {
+    if (!source) {
+        LOGE("Shader source is null");
+        return 0;
+    }
+    
     GLuint shader = glCreateShader(type);
     if (!shader) {
-        LOGE("Failed to create shader");
+        LOGE("Failed to create shader of type 0x%04X", type);
         return 0;
     }
     
     // 编译着色器
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
+    checkGLError("glCompileShader");
     
     // 检查编译状态
     GLint compileStatus;
@@ -355,12 +437,19 @@ GLuint OptimizedRenderer::compileShader(const char* source, GLenum type) {
         return 0;
     }
     
+    LOGI("Shader compiled successfully (type=0x%04X)", type);
     return shader;
 }
 
 void OptimizedRenderer::checkGLError(const char* operation) {
     GLenum error;
+    bool hadError = false;
     while ((error = glGetError()) != GL_NO_ERROR) {
         LOGE("OpenGL error during %s: 0x%04X", operation, error);
+        hadError = true;
+    }
+    
+    if (hadError) {
+        LOGE("GL error check complete for operation: %s", operation);
     }
 }
