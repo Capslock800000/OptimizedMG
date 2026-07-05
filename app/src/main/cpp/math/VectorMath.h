@@ -1,7 +1,16 @@
 #pragma once
 
 #include <cstddef>
-#include <arm_neon.h>
+
+// Only include ARM NEON for ARM architectures
+#ifdef __ARM_NEON__
+    #include <arm_neon.h>
+    #define ENABLE_NEON 1
+#else
+    #define ENABLE_NEON 0
+    // Define float32x4_t as a dummy type for non-ARM builds
+    typedef float float32x4_t __attribute__((vector_size(16)));
+#endif
 
 namespace OptimizedMath {
 
@@ -15,7 +24,9 @@ struct ALIGNED(16) Vector4 {
     union {
         struct { float x, y, z, w; };
         float data[4];
+#if ENABLE_NEON
         float32x4_t neon;
+#endif
     };
     
     Vector4() : x(0), y(0), z(0), w(0) {}
@@ -43,7 +54,9 @@ struct ALIGNED(16) Vector3 {
     union {
         struct { float x, y, z; };
         float data[3];
+#if ENABLE_NEON
         float32x4_t neon; // 仍然使用128位对齐以便NEON操作
+#endif
     };
     
     Vector3() : x(0), y(0), z(0) {}
