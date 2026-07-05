@@ -1,16 +1,7 @@
 #pragma once
 
 #include "VectorMath.h"
-
-// Conditionally include ARM NEON
-#ifdef __ARM_NEON__
-    #include <arm_neon.h>
-    #define ENABLE_NEON 1
-#else
-    #define ENABLE_NEON 0
-    // Define float32x4_t as a dummy type for non-ARM builds
-    typedef float float32x4_t __attribute__((vector_size(16)));
-#endif
+#include <arm_neon.h>
 
 namespace OptimizedMath {
 
@@ -19,9 +10,7 @@ struct ALIGNED(16) Matrix4 {
     union {
         float m[4][4];
         float data[16];
-#if ENABLE_NEON
         float32x4_t rows[4]; // NEON友好的行存储
-#endif
     };
     
     Matrix4();
