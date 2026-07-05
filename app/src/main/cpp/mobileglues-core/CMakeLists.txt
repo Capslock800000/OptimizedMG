@@ -125,6 +125,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ./includes
     ./3rdparty/glm
     ./3rdparty/xxhash)
+    ./include/glm
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

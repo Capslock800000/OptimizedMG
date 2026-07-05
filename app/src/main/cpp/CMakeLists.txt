@@ -67,6 +67,7 @@ target_include_directories(optimizedmg PRIVATE
     ${MG_ROOT}/include/SPIRV
     ${MG_ROOT}/include/glslang
     ${MG_ROOT}/include/spirv_cross
+    ${MG_ROOT}/include/glm
         ${MG_ROOT}/include
 )
 
