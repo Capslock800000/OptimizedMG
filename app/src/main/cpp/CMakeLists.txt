@@ -83,3 +83,8 @@ target_link_libraries(optimizedmg
     ${egl-lib}
     ${glesv3-lib}
 )
+
+
+target_sources(optimizedmg PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/MobileGlues-cpp/config/cJSON.c
+)
