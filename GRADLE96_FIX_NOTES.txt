@@ -1,0 +1,7 @@
+Gradle 9.6.1 compatibility patch:
+- Upgraded Android Gradle Plugin to 9.2.0
+- Upgraded Kotlin Gradle plugin to 2.3.10
+- Applied Kotlin Compose plugin
+- Bumped androidx.activity:activity-compose to 1.12.2
+- Removed old composeOptions compiler extension setting
+- Switched Java/Kotlin target to 17
