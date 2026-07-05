@@ -1,2 +1,0 @@
-Manifest rewritten to clean source XML with valid resource references and preserved custom parameters.
-Removed invalid adaptive-icon duplicates from mipmap-xxxhdpi.
