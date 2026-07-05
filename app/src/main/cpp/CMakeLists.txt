@@ -50,6 +50,7 @@ add_library(optimizedmg SHARED
 )
 
 target_include_directories(optimizedmg PRIVATE
+    # FSR1 requires GLM headers
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/math
     ${CMAKE_CURRENT_SOURCE_DIR}/mobileglues
@@ -68,7 +69,7 @@ target_include_directories(optimizedmg PRIVATE
     ${MG_ROOT}/include/glslang
     ${MG_ROOT}/include/spirv_cross
     ${MG_ROOT}/include/glm
-        ${MG_ROOT}/include
+    ${MG_ROOT}/include
 )
 
 target_compile_options(optimizedmg PRIVATE
