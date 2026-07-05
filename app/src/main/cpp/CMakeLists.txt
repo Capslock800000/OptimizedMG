@@ -49,9 +49,8 @@ add_library(optimizedmg SHARED
     ${MG_ROOT}/gl/glsl/glsl_for_es_stub.cpp
 )
 
-# Enable NEON support only for ARMv7 (32-bit ARM)
-# ARM64 (aarch64) has NEON built-in and doesn't need these flags
-if(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
+# Enable NEON support for ARM architectures
+if(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a" OR CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
     target_compile_options(optimizedmg PRIVATE -mfloat-abi=softfp -mfpu=neon)
 endif()
 
