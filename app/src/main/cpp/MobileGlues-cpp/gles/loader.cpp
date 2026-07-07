@@ -28,7 +28,15 @@ void *gles = nullptr, *egl = nullptr;
 struct gles_func_t g_gles_func;
 
 static const char* path_prefix[] = {
-    "", "/opt/vc/lib/", "/usr/local/lib/", "/usr/lib/", nullptr,
+    "",
+    "/vendor/lib64/egl/",
+    "/vendor/lib64/",
+    "/system/lib64/egl/",
+    "/system/lib64/",
+    "/opt/vc/lib/",
+    "/usr/local/lib/",
+    "/usr/lib/",
+    nullptr,
 };
 
 static const char* lib_ext[] = {
@@ -38,13 +46,23 @@ static const char* lib_ext[] = {
     "so",    "so.1", "so.2", "dylib", "dll", nullptr,
 };
 
-static const char* gles3_lib[] = {"libGLESv3_CM", "libGLESv3", nullptr};
+static const char* gles3_lib[] = {
+    "libGLESv3_CM",
+    "libGLESv3",
+    "libGLESv2",
+    "libGLES_mali",
+    "libGLES_adreno",
+    "libGLES",
+    nullptr};
 
 static const char* egl_lib[] = {
 #if defined(BCMHOST)
     "libbrcmEGL",
 #endif
-    "libEGL", nullptr};
+    "libEGL_mali",
+    "libEGL_adreno",
+    "libEGL",
+    nullptr};
 
 const char* GLES_ANGLE = "libGLESv2_angle.so";
 const char* EGL_ANGLE = "libEGL_angle.so";
@@ -82,6 +100,12 @@ void load_libs() {
     const char* egl_override = global_settings.angle == AngleMode::Enabled ? EGL_ANGLE : nullptr;
     gles = open_lib(gles3_lib, gles_override);
     egl = open_lib(egl_lib, egl_override);
+    if (!gles) {
+        LOG_W("load_libs(): failed to open GLES library; will fall back to RTLD_DEFAULT")
+    }
+    if (!egl) {
+        LOG_W("load_libs(): failed to open EGL library; will fall back to RTLD_DEFAULT")
+    }
 #else
     gles = (void*)(~(uintptr_t)0);
     egl = (void*)(~(uintptr_t)0);

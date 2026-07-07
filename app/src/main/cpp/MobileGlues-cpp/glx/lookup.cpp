@@ -19,6 +19,22 @@
 
 #define DEBUG 0
 
+
+static void* get_self_library_handle() {
+    static void* self_lib = nullptr;
+    if (self_lib) return self_lib;
+
+    Dl_info info{};
+    if (dladdr((void*)&glXGetProcAddress, &info) && info.dli_fname) {
+        self_lib = dlopen(info.dli_fname, RTLD_NOW | RTLD_NOLOAD | RTLD_GLOBAL);
+        if (!self_lib) {
+            self_lib = dlopen(info.dli_fname, RTLD_NOW | RTLD_GLOBAL);
+        }
+    }
+    return self_lib;
+}
+
+
 std::string handle_multidraw_func_name(std::string name) {
     std::string namestr = name;
     if (namestr != "glMultiDrawElementsBaseVertex" && namestr != "glMultiDrawElements") {
@@ -57,20 +73,34 @@ void* glXGetProcAddress(const char* name) {
         LOG_W("glXGetProcAddress called with null name")
         return nullptr;
     }
+
     std::string real_func_name = handle_multidraw_func_name(std::string(name));
 #ifdef __APPLE__
     return dlsym((void*)(~(uintptr_t)0), real_func_name.c_str());
 #else
     void* proc = nullptr;
-    if (gles) {
+
+    // 1) Resolve against our own exported wrapper symbols first.
+    void* self_lib = get_self_library_handle();
+    if (self_lib) {
+        proc = dlsym(self_lib, real_func_name.c_str());
+    }
+
+    // 2) Then resolve against the vendor/system GLES library.
+    if (!proc && gles) {
         proc = dlsym(gles, real_func_name.c_str());
     }
+
+    // 3) Then resolve against EGL.
     if (!proc && egl) {
         proc = dlsym(egl, real_func_name.c_str());
     }
+
+    // 4) Final fallback to global namespace.
     if (!proc) {
         proc = dlsym(RTLD_DEFAULT, real_func_name.c_str());
     }
+
     if (!proc) {
         LOG_W("Failed to get OpenGL function: %s", real_func_name.c_str())
         return nullptr;
