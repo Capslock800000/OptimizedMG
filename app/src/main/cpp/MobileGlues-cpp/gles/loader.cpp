@@ -53,7 +53,7 @@ void* open_lib(const char** names, const char* override) {
     void* lib = nullptr;
 
     char path_name[PATH_MAX + 1];
-    int flags = RTLD_LOCAL | RTLD_NOW;
+    int flags = RTLD_GLOBAL | RTLD_NOW;
     if (override) {
         if ((lib = dlopen(override, flags))) {
             strncpy(path_name, override, PATH_MAX);
@@ -89,7 +89,14 @@ void load_libs() {
 }
 
 void* proc_address(void* lib, const char* name) {
-    return dlsym(lib, name);
+    if (!name) return nullptr;
+    if (lib) {
+        void* sym = dlsym(lib, name);
+        if (sym) return sym;
+    }
+    void* sym = dlsym(RTLD_DEFAULT, name);
+    if (sym) return sym;
+    return nullptr;
 }
 
 void set_hardware() {

@@ -53,20 +53,28 @@ std::string handle_multidraw_func_name(std::string name) {
 
 void* glXGetProcAddress(const char* name) {
     LOG()
+    if (!name) {
+        LOG_W("glXGetProcAddress called with null name")
+        return nullptr;
+    }
     std::string real_func_name = handle_multidraw_func_name(std::string(name));
 #ifdef __APPLE__
     return dlsym((void*)(~(uintptr_t)0), real_func_name.c_str());
 #else
-
     void* proc = nullptr;
-
-    proc = dlsym(RTLD_DEFAULT, real_func_name.c_str());
-
+    if (gles) {
+        proc = dlsym(gles, real_func_name.c_str());
+    }
+    if (!proc && egl) {
+        proc = dlsym(egl, real_func_name.c_str());
+    }
+    if (!proc) {
+        proc = dlsym(RTLD_DEFAULT, real_func_name.c_str());
+    }
     if (!proc) {
         LOG_W("Failed to get OpenGL function: %s", real_func_name.c_str())
         return nullptr;
     }
-
     return proc;
 #endif
 }
