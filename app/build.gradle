@@ -29,6 +29,7 @@ android {
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             externalNativeBuild {
@@ -53,6 +54,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    signingConfigs {
+        release {
+            def keystoreFile = rootProject.file("keystore/OMG.jks")
+            if (keystoreFile.exists()) {
+                storeFile keystoreFile
+            }
+            storePassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
+            keyAlias = (project.findProperty("OMG") ?: System.getenv("OMG"))
+            keyPassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
+        }
+    }
+
 
     kotlin {
         jvmToolchain(17)

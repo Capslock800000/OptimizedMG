@@ -35,6 +35,8 @@ static void* get_self_library_handle() {
 }
 
 
+extern "C" {
+
 std::string handle_multidraw_func_name(std::string name) {
     std::string namestr = name;
     if (namestr != "glMultiDrawElementsBaseVertex" && namestr != "glMultiDrawElements") {
@@ -111,4 +113,5 @@ void* glXGetProcAddress(const char* name) {
 
 void* glXGetProcAddressARB(const char* name) {
     return glXGetProcAddress(name);
-}
+
+} // extern "C"

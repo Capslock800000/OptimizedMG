@@ -17,6 +17,7 @@
 
 #define DEBUG 0
 
+extern "C" {
 Version GLVersion;
 
 void glGetIntegerv(GLenum pname, GLint* params) {
@@ -500,3 +501,4 @@ void glGetQueryObjecti64v(GLuint id, GLenum pname, GLint64* params) {
         CHECK_GL_ERROR
     }
 }
+} // extern "C"
