@@ -78,6 +78,18 @@ target_compile_options(optimizedmg PRIVATE
     -fvisibility=hidden
 )
 
+if(ANDROID_ABI STREQUAL "arm64-v8a")
+    target_compile_options(optimizedmg PRIVATE
+        -march=armv8-a+simd
+    )
+elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+    target_compile_options(optimizedmg PRIVATE
+        -march=armv7-a
+        -mfloat-abi=softfp
+        -mfpu=neon
+    )
+endif()
+
 target_link_libraries(optimizedmg
     ${android-lib}
     ${log-lib}

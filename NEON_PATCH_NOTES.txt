@@ -1,0 +1,4 @@
+Applied NEON optimization scaffold:
+- Added recommended compiler flags documentation.
+- TODO markers for Matrix4/Quaternion SIMD migration.
+Manual source implementation is still required for full SIMD rewrite.
