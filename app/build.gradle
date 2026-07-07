@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
 }
 
@@ -16,12 +17,14 @@ android {
         targetSdk 36
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         externalNativeBuild {
             cmake {
-                cppFlags '-std=c++17 -O3 -ffast-math -march=armv8-a+simd -mfpu=neon'
+                cppFlags '-std=c++17 -O3 -ffast-math'
                 arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
             }
         }
+
         ndk {
             abiFilters 'arm64-v8a', 'armeabi-v7a'
         }
@@ -30,11 +33,28 @@ android {
     signingConfigs {
         release {
             def keystoreFile = rootProject.file("keystore/OMG.jks")
-            if (keystoreFile.exists()) {
-                storeFile keystoreFile
+            if (!keystoreFile.exists()) {
+                throw new GradleException("Missing keystore: ${keystoreFile}")
             }
+            storeFile keystoreFile
+            storePassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
+            keyAlias = (project.findProperty("OMG") ?: System.getenv("OMG"))
+            keyPassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
+        }
+    }
 
-buildTypes {
+    buildTypes {
+        debug {
+            jniDebuggable true
+            signingConfig signingConfigs.release
+            externalNativeBuild {
+                cmake {
+                    cFlags '-O2 -g'
+                    cppFlags '-O2 -g'
+                }
+            }
+        }
+
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
@@ -46,28 +66,12 @@ buildTypes {
                 }
             }
         }
-        debug {
-            jniDebuggable true
-            externalNativeBuild {
-                cmake {
-                    cFlags '-O2 -g'
-                    cppFlags '-O2 -g'
-                }
-            }
-        }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    
-            storePassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
-            keyAlias = (project.findProperty("OMG") ?: System.getenv("OMG"))
-            keyPassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
-        }
-    }
-
 
     kotlin {
         jvmToolchain(17)
@@ -93,7 +97,6 @@ buildTypes {
 
 dependencies {
     implementation platform('androidx.compose:compose-bom:2024.05.00')
-
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.activity:activity-compose:1.12.2'
