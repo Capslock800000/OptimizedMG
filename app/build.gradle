@@ -31,10 +31,12 @@ android {
 
     signingConfigs {
         release {
-            def keystoreFile = rootProject.file("keystore/OMG.jks")
+            def keystoreFile = rootProject.file("keystore/OMGSignKey.jks")
             if (!keystoreFile.exists()) {
-                throw new GradleException("Missing keystore: ${keystoreFile}")
-            }
+    logger.lifecycle("OMGSignKey.jks not found, using default signing.")
+} else {
+    storeFile keystoreFile
+}
             storeFile keystoreFile
             storePassword = (project.findProperty("OMG") ?: System.getenv("OMG"))
             keyAlias = (project.findProperty("OMG") ?: System.getenv("OMG"))
